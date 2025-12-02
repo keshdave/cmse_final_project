@@ -66,8 +66,7 @@ main_options = [
     "Class Imbalance",
     "Missing Values",
     "Correlation Analysis",
-    "Scatter Plots",
-    "Wrapping Up",
+    "Scatter Plots"
 ]
 
 project_options = [
@@ -104,16 +103,30 @@ if page == "About this App":
     st.markdown("""
         <div style="background-color:#f0f2f6;padding:32px 24px 24px 24px;border-radius:12px;margin-bottom:24px;">
             <h2 style="color:#1a202c;margin-bottom:8px;">Get ready for Puck Drop!</h2>
-            <p style="font-size:1.1rem;color:#444;line-height:1.6;margin-bottom:18px;">
-                The main focus of this project is to use <b>Initial Data Analysis (IDA)</b> and <b>Exploratory Data Analysis (EDA)</b> to preprocess two raw datasets containing NHL defenseman data from the last year.<br><br>
-                The goal is to get the data to a point where we can see who is producing the most points and what features correlate with point production. This will set the stage for my semester-end project: <b>predicting points using linear regression</b>.
+            <p style="font-size:1.05rem;color:#444;line-height:1.6;margin-bottom:18px;">
+                The <b>Final Project Pages</b> extend the earlier midterm work and walk through a reproducible analysis pipeline: preparing and combining datasets, engineering features, performing targeted exploratory visualizations, and building simple predictive models. These pages are structured as a step-by-step workflow so you can start at the beginning (Data Preparation) and follow through to feature engineering and model evaluation.
             </p>
+            <p style="font-size:1.02rem;color:#444;line-height:1.5;margin-bottom:8px;">
+                What you will find in the Final Project Pages:
+            </p>
+            <ul style="font-size:1.02rem;color:#333;margin-left:1.2em;">
+                <li><b>Data Preparation + Collection</b>: combines the multiple source files and shows the merged dataset.</li>
+                <li><b>EDA and Visualization</b>: interactive visualizations (parallel coordinates, clustered heatmaps) to inspect feature behavior and relationships.</li>
+                <li><b>Data Processing & Feature Engineering</b>: transforms (log, z), derived features (ratios, polynomial), and categorical encodings with preview and download.</li>
+                <li><b>Model Development & Evaluation</b>: trains simple models, compares metrics, and provides diagnostic plots and downloadable predictions.</li>
+            </ul>
             <ul style="font-size:1.05rem;color:#333;margin-left:1.2em;">
                 <li>You will find <b>interactive graphs</b> throughout the app to help you explore the data.</li>
                 <li>There are <b>dropdown text boxes</b> on each page, providing explanations and insights for every analysis.</li>
             </ul>
+            <p style="font-size:0.98rem;color:#444;line-height:1.5;margin-top:12px;">
+                <b>Navigation note:</b> To access the Final Project pages in the sidebar, first switch to the <i>Final Project Pages</i> radio group (the lower radio group in the sidebar), then click <b>"Data Preperation + Collection"</b> to start at the beginning of the Final Project section. This two-step selection ensures the app activates the final-project group and jumps to the start of that workflow.
+            </p>
+            <div style="margin-top:16px;color:#666;font-size:0.98rem;">
+                <i>Note: the Final Project pages are an extension of my original midterm project, they build on the earlier EDA/processing work and add additional data preparation, feature engineering, and modeling steps as the next phase of the analysis.</i>
+            </div>
             <div style="margin-top:24px;color:#888;font-size:0.98rem;">
-                <i>Created by <b>Keshavi Dave</b> for her CMSE Midterm Project</i>
+                <i>Created by <b>Keshavi Dave</b> for her CMSE 830 Semester Long Project</i>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -459,26 +472,7 @@ elif page == "Scatter Plots":
             st.pyplot(g.fig)
         else:
             st.info("Not enough numeric columns for a pairplot.")
-# --- Wrapping Up Page ---
-elif page == "Wrapping Up":
-    st.header("Wrapping Up")
-    st.info("**Congratulations!** We have completed an interactive EDA of NHL defensemen data. Here is a summary of what was accomplished in this app:")
-    st.markdown("""
-    - Explored and cleaned two raw datasets (Bio and Season Stats) for NHL defensemen
-    - Investigated missing values and their impact on analysis
-    - Examined class imbalance and its effect on feature distributions
-    - Analyzed feature correlations, focusing on what drives point production
-    - Used interactive scatter plots and pairplots to visualize relationships
-    - Drew insights about which features matter most for predicting points
-    
-    **Final Thoughts:**
-    - Assists and Even Strength Points are the most important features for predicting Points among defensemen
-    - Top producing defensemen come from a mix of divisions and conferences, but the highest scorers are mostly from the US, Canada, and Sweden
-    - My data is now ready for regression and prediction modeling for the final project!
-    """)
-    st.info("Thank you for exploring my data! I hope for this to be a valuable part of my work towards Defencemen point predictions.")
 
-   
    
     # --- Final project data preparation page ---
 elif page == "Data Preperation + Collection":
