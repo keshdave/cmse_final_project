@@ -831,7 +831,7 @@ elif page == "Data Processing and Feature Engineering":
         else:
             df_final[c] = np.nan
 
-    st.subheader("Snapshot of Combined Data")
+    st.subheader("Snapshot of Data")
     st.dataframe(df_final.head(10), use_container_width=True)
 
     numeric_cols = df_final.select_dtypes(include=[np.number]).columns.tolist()
