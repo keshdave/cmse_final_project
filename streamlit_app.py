@@ -482,7 +482,7 @@ elif page == "Wrapping Up":
    
     # --- Final project data preparation page ---
 elif page == "Data Preperation + Collection":
-    st.header("Data Preperation + Collection - Final")
+    st.header("Data Preperation + Collection")
     st.info("With the addition of **[Miscellaneous Stats](https://www.nhl.com/stats/skaters?report=realtime&reportType=season&seasonFrom=20242025&seasonTo=20242025&gameType=2&position=D&sort=a_skaterFullName&page=0&pageSize=100)** from _nhl.com/stats_, we now have _**three distinct datasets**_, along with `Bio.xlsx` and `SS.xlsx` which were used in the miderm.")
     st.markdown("---")
 
@@ -679,7 +679,7 @@ This page adds **two advanced visualizations**, bringing the total number of vis
 # --- Model Development and Evaluation ---
 elif page == "Model Development and Evaluation":
     st.header("Model Development and Evaluation")
-    st.info("This section implements **two machine learning models** and includes **thorough evaluation and comparison** to assess performance and interpret results.")
+    st.info("This section implements **two machine learning models** and includes **evaluation and comparison** to assess performance and interpret results.")
 
     # Rebuild final combined dataset
     try:
@@ -696,7 +696,7 @@ elif page == "Model Development and Evaluation":
         else:
             df_final[c] = np.nan
 
-    st.subheader("Data preview (first 8 rows)")
+    st.subheader("Snapshot of Data")
     st.dataframe(df_final.head(8), use_container_width=True)
 
     numeric_cols = df_final.select_dtypes(include=[np.number]).columns.tolist()
@@ -814,7 +814,7 @@ elif page == "Model Development and Evaluation":
 # --- Data Processing and Feature Engineering ---
 elif page == "Data Processing and Feature Engineering":
     st.header("Data Processing and Feature Engineering")
-    st.info("Use the tools on this page to create derived features, apply transforms (log, standardize), and preview/download the processed dataset.")
+    st.info("Two multiple enginering techniques have been implemented on this page: _**Numeric Transoformations**_ and _**Categorical Encoding**_.")
 
     # Rebuild final combined dataset (same logic as Data Preperation page)
     try:
@@ -831,7 +831,7 @@ elif page == "Data Processing and Feature Engineering":
         else:
             df_final[c] = np.nan
 
-    st.subheader("Preview - Final Combined Dataset (first 10 rows)")
+    st.subheader("Snapshot of Combined Data")
     st.dataframe(df_final.head(10), use_container_width=True)
 
     numeric_cols = df_final.select_dtypes(include=[np.number]).columns.tolist()
@@ -840,51 +840,99 @@ elif page == "Data Processing and Feature Engineering":
         st.stop()
 
     st.markdown("**Feature Engineering Options**")
-    col1, col2 = st.columns(2)
-    with col1:
-        log_cols = st.multiselect("Log-transform columns (adds `_log`):", numeric_cols)
-    with col2:
-        z_cols = st.multiselect("Standardize columns (adds `_z`):", numeric_cols)
+    tab_num, tab_cat = st.tabs(["Numeric Transforms", "Categorical Encoding"])
 
-    custom_name = st.text_input("Optional name for a simple ratio feature (A/B -> name)", value="")
-    ratio_a = None
-    ratio_b = None
-    if custom_name:
-        ratio_a = st.selectbox("Numerator (A)", [None] + numeric_cols)
-        ratio_b = st.selectbox("Denominator (B)", [None] + numeric_cols)
+    # --- Numeric transforms tab (existing behavior) ---
+    with tab_num:
+        col1, col2 = st.columns(2)
+        with col1:
+            log_cols = st.multiselect("Log-transform columns (adds `_log`):", numeric_cols)
+        with col2:
+            z_cols = st.multiselect("Standardize columns (adds `_z`):", numeric_cols)
 
-    if st.button("Apply transforms and preview"):
-        df_proc = df_final.copy()
-        # apply log transforms
-        for c in log_cols:
-            try:
-                df_proc[c + '_log'] = np.log1p(df_proc[c])
-            except Exception:
-                df_proc[c + '_log'] = np.nan
-        # apply z-score standardization
-        for c in z_cols:
-            try:
-                df_proc[c + '_z'] = (df_proc[c] - df_proc[c].mean()) / df_proc[c].std()
-            except Exception:
-                df_proc[c + '_z'] = np.nan
-        # simple ratio feature
-        if custom_name and ratio_a and ratio_b and ratio_a in df_proc.columns and ratio_b in df_proc.columns:
-            with np.errstate(divide='ignore', invalid='ignore'):
-                df_proc[custom_name] = df_proc[ratio_a] / df_proc[ratio_b]
+        custom_name = st.text_input("Optional name for a simple ratio feature (A/B -> name)", value="", key='ratio_name')
+        ratio_a = None
+        ratio_b = None
+        if custom_name:
+            ratio_a = st.selectbox("Numerator (A)", [None] + numeric_cols, key='ratio_a')
+            ratio_b = st.selectbox("Denominator (B)", [None] + numeric_cols, key='ratio_b')
 
-        st.success("Transforms applied — preview below (first 10 rows)")
-        st.dataframe(df_proc.head(10), use_container_width=True)
+        if st.button("Apply transforms and preview", key='apply_numeric'):
+            df_proc = df_final.copy()
+            # apply log transforms
+            for c in log_cols:
+                try:
+                    df_proc[c + '_log'] = np.log1p(df_proc[c])
+                except Exception:
+                    df_proc[c + '_log'] = np.nan
+            # apply z-score standardization
+            for c in z_cols:
+                try:
+                    df_proc[c + '_z'] = (df_proc[c] - df_proc[c].mean()) / df_proc[c].std()
+                except Exception:
+                    df_proc[c + '_z'] = np.nan
+            # simple ratio feature
+            if custom_name and ratio_a and ratio_b and ratio_a in df_proc.columns and ratio_b in df_proc.columns:
+                with np.errstate(divide='ignore', invalid='ignore'):
+                    df_proc[custom_name] = df_proc[ratio_a] / df_proc[ratio_b]
 
-        st.markdown("**Descriptive stats for newly created features**")
-        new_cols = [c for c in df_proc.columns if c.endswith('_log') or c.endswith('_z') or c == custom_name]
-        if new_cols:
-            st.dataframe(df_proc[new_cols].describe().T)
+            st.success("Transforms applied — preview below (first 10 rows)")
+            st.dataframe(df_proc.head(10), use_container_width=True)
+
+            st.markdown("**Descriptive stats for newly created features**")
+            new_cols = [c for c in df_proc.columns if c.endswith('_log') or c.endswith('_z') or c == custom_name]
+            if new_cols:
+                st.dataframe(df_proc[new_cols].describe().T)
+            else:
+                st.info("No new features were created.")
+
+            # provide download
+            csv = df_proc.to_csv(index=False)
+            st.download_button("Download processed CSV", data=csv, file_name='df_processed.csv', mime='text/csv')
+
+    # --- Categorical encoding tab ---
+    with tab_cat:
+        st.subheader("One-hot encode categorical variables")
+        # Candidate categorical columns for encoding
+        available_cat = [c for c in ['S/C', 'Conf', 'Div'] if c in df_final.columns]
+        if not available_cat:
+            st.info("No categorical columns (`S/C`, `Conf`, `Div`) found in the dataset.")
         else:
-            st.info("No new features were created.")
+            enc_select = st.multiselect("Select columns to one-hot encode:", available_cat)
+            drop_first_enc = st.checkbox("Drop first level (avoid multicollinearity)", value=True)
+            dummy_na = st.checkbox("Create indicator for NaNs (dummy_na)", value=False)
+            drop_originals = st.checkbox("Drop original categorical columns after encoding", value=False)
 
-        # provide download
-        csv = df_proc.to_csv(index=False)
-        st.download_button("Download processed CSV", data=csv, file_name='df_processed.csv', mime='text/csv')
+            if st.button("Apply encoding and preview", key='apply_enc'):
+                df_enc = df_final.copy()
+                if not enc_select:
+                    st.info("Select at least one column to encode.")
+                else:
+                    try:
+                        # Use get_dummies for selected columns only
+                        prefixes = [c.replace('/', '_') for c in enc_select]
+                        dummies = pd.get_dummies(df_enc[enc_select], prefix=prefixes, prefix_sep='_', drop_first=drop_first_enc, dummy_na=dummy_na)
+                        # concat and optionally drop originals
+                        df_enc = pd.concat([df_enc, dummies], axis=1)
+                        if drop_originals:
+                            df_enc = df_enc.drop(columns=enc_select)
+
+                        st.success("Encoding applied, preview below")
+                        st.dataframe(df_enc.head(10), use_container_width=True)
+
+                        # show new columns and basic counts
+                        new_cols = [c for c in df_enc.columns if c not in df_final.columns]
+                        if new_cols:
+                            st.markdown("**Newly created one-hot columns (sample counts)**")
+                            counts = df_enc[new_cols].sum().rename('Count').to_frame()
+                            st.dataframe(counts)
+                        else:
+                            st.info("No new one-hot columns were produced.")
+
+                        csv_enc = df_enc.to_csv(index=False)
+                        st.download_button("Download encoded CSV", data=csv_enc, file_name='df_encoded.csv', mime='text/csv')
+                    except Exception as e:
+                        st.error(f"Failed to encode selected columns: {e}")
 
 
 
