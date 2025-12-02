@@ -120,7 +120,7 @@ if page == "About this App":
                 <li>There are <b>dropdown text boxes</b> on each page, providing explanations and insights for every analysis.</li>
             </ul>
             <p style="font-size:0.98rem;color:#444;line-height:1.5;margin-top:12px;">
-                <b>Navigation note:</b> To access the Final Project pages in the sidebar, first switch to the <i>Final Project Pages</i> radio group (the lower radio group in the sidebar), then click <b>"Data Preperation + Collection"</b> to start at the beginning of the Final Project section. This two-step selection ensures the app activates the final-project group and jumps to the start of that workflow.
+                <b>Navigation note:</b> To access the Final Project pages in the sidebar, first switch to the <i>Final Project Pages</i> radio group (the lower radio group in the sidebar), then click on <b>"EDA and Visulization"</b> and then click back to <b>"Data Preperation + Collection"</b> to start at the beginning of the Final Project section.
             </p>
             <div style="margin-top:16px;color:#666;font-size:0.98rem;">
                 <i>Note: the Final Project pages are an extension of my original midterm project, they build on the earlier EDA/processing work and add additional data preparation, feature engineering, and modeling steps as the next phase of the analysis.</i>
@@ -927,6 +927,3 @@ elif page == "Data Processing and Feature Engineering":
                         st.download_button("Download encoded CSV", data=csv_enc, file_name='df_encoded.csv', mime='text/csv')
                     except Exception as e:
                         st.error(f"Failed to encode selected columns: {e}")
-
-
-
