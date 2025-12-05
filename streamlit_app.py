@@ -1,11 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import numpy as np
 import seaborn as sns
-from sklearn.preprocessing import StandardScaler
 
 # --- Page setup ---
 st.set_page_config(page_title="NHL Defensemen: Data Analysis", layout="wide")
@@ -205,7 +202,6 @@ if page == "Dataset Overview":
             - `FOW%` - Face Off Win Percentage
         """)
 
-    # Small legend table showing the encodings applied to the Combined Dataset view
     enc_info = {
         'Feature': ['S/C', 'Div', 'Conf'],
         'Encoding': [
@@ -237,7 +233,6 @@ if page == "Dataset Overview":
 
     st.dataframe(view_df, use_container_width=True, height=320)
 
-    # Dropdown for combined data info
     with st.expander("**How is this more useful, and what's changed?**", expanded=False):
         st.markdown("""
         - The two raw datasets have been merged to be used for analysis.
@@ -280,6 +275,7 @@ elif page == "Class Imbalance":
             fig = px.pie(values=cat_counts.values, names=cat_counts.index, hole=0.3,
                          title=f'{selected_cat} Proportion')
             st.plotly_chart(fig, use_container_width=True)
+    
     st.write("Click on the dropdown below that dives more into the category chosen above in the graphs")
     with st.expander("**`S/C` - Skater Shoots**", expanded=False):
         st.markdown("""
@@ -488,7 +484,7 @@ elif page == "Data Preperation + Collection":
         st.stop()
 
     add_cols = ['Hits', 'BkS', 'GvA', 'TkA']
-    present = [c for c in add_cols if c in misc.columns]
+    # note: we will report missing columns below; no separate 'present' variable needed
     missing_cols = [c for c in add_cols if c not in misc.columns]
 
     if missing_cols:
@@ -699,13 +695,13 @@ elif page == "Model Development and Evaluation":
         st.stop()
 
     with st.expander("Modeling inputs & preprocessing", expanded=True):
-        target_default = 'P' if 'P' in numeric_cols else numeric_cols[-1]
-        target = st.selectbox("Select target variable:", numeric_cols, index=numeric_cols.index(target_default) if target_default in numeric_cols else 0)
-        features = st.multiselect("Select feature columns (numeric):", [c for c in numeric_cols if c != target], default=[c for c in ['A','GP'] if c in numeric_cols][:4])
-        test_size = st.slider("Test set proportion:", 0.05, 0.5, 0.2)
-        do_scale = st.checkbox("Standardize features (Z-score)", value=True)
+        # Target is fixed to Points ('P') for this analysis
+        target = 'P'
+        st.markdown("**Target variable:** `P` - Points")
 
-    # Use a fixed random state for reproducibility (removed interactive input)
+        features = st.multiselect("Select feature columns:", [c for c in numeric_cols if c != target], default=[c for c in ['A','S', 'EVP'] if c in numeric_cols][:4])
+        test_size = 0.5
+
     random_state = 42
 
     if not features:
@@ -726,13 +722,8 @@ elif page == "Model Development and Evaluation":
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=int(random_state))
 
-        # scaling
-        if do_scale:
-            scaler = StandardScaler()
-            X_train_scaled = pd.DataFrame(scaler.fit_transform(X_train), columns=X_train.columns, index=X_train.index)
-            X_test_scaled = pd.DataFrame(scaler.transform(X_test), columns=X_test.columns, index=X_test.index)
-        else:
-            X_train_scaled, X_test_scaled = X_train, X_test
+        # No automatic scaling applied here; models use raw numeric features
+        X_train_scaled, X_test_scaled = X_train, X_test
 
         models = {
             'Linear Regression': LinearRegression(),
