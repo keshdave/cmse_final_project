@@ -1,19 +1,73 @@
-# 🎈 Blank app template
+# CMSE 830 Midterm Project
 
-A simple Streamlit app template for you to modify!
+To access the app, [Click Here!](https://blank-app-6ed1ez2skeb.streamlit.app/)
+---
+## Features
+- Interactive EDA: parallel coordinates and clustered heatmaps for multivariate inspection.
+- Feature engineering: log transforms, z-standardization, ratio and polynomial features, and one-hot encoding for categorical variables (`S/C`, `Div`, `Conf`).
+- Modeling: two baseline models (Linear Regression and Decision Tree) with test-set evaluation and cross-validated metrics.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.app/)
+## Repository structure
+- `streamlit_app.py` — main Streamlit application. Use this to run the app locally.
+- `SS.xlsx`, `Bio.xlsx`, `Misc.xlsx` — input data files (not included in this repo). These are expected to be placed in the repository root when running the app.
+- `requirements.txt` — Python dependencies.
 
-### How to run it on your own machine
+## Data sources and notes
+- `SS.xlsx` — Season statistics exported from NHL stats (per-player season-level features such as `GP`, `G`, `A`, `P`, `S`, `PIM`, `TOI/GP`, etc.).
+- `Bio.xlsx` — Biographical and draft data (height, weight, country, draft year/round/overall).
+- `Misc.xlsx` — Additional per-player stats included in the final dataset such as `Hits`, `BkS` (blocked shots), `GvA` (giveaways), and `TkA` (takeaways).
 
-1. Install the requirements
+## Data dictionary (selected / important fields)
+| Column | Type | Description |
+|---|---|---|
+| `Player` | string | Player full name (identifier for display/hover only) |
+| `Team` | string | Team abbreviation |
+| `GP` | int | Games played |
+| `G` | int | Goals |
+| `A` | int | Assists |
+| `P` | int | Points (Goals + Assists) — model target |
+| `P/GP` | float | Points per game |
+| `EVG`, `EVP` | int | Even-strength goals / points |
+| `PPG`, `PPP` | int | Power-play goals / points |
+| `S` | int | Shots on goal |
+| `S%` | float | Shooting percentage |
+| `TOI/GP` | float | Time on ice per game |
+| `FOW%` | float | Face-off win percentage (mostly for forwards; often missing for defensemen) |
+| `Hits`, `BkS`, `GvA`, `TkA` | int | Misc stats from `Misc.xlsx`: hits, blocked shots, giveaways, takeaways |
+| `Ctry` | string | Country of origin |
+| `Ht`, `Wt` | int | Height (inches), Weight (lbs) |
+| `Draft Yr`, `Round`, `Overall` | int | Draft metadata (may contain missing values) |
+| `S/C` | categorical | Shoots: `L` / `R` (one-hot encoded option available) |
+| `Div` | categorical | Division derived from `Team` (ATL / MET / CEN / PAC) |
+| `Conf` | categorical | Conference derived from `Team` (EC / WC) |
 
-   ```
-   $ pip install -r requirements.txt
-   ```
 
-2. Run the app
+## Feature engineering available in-app
+- Log transform (`_log`) — uses `np.log1p` to handle zeros.
+- Z-score standardization (`_z`) — centered and scaled column-wise.
+- Ratio features — user-specified A/B ratio column creation.
+- Polynomial features — optional generation (degree configurable) for numeric columns (careful: can explode column count).
+- One-hot encoding — for `S/C`, `Div`, `Conf` (options to drop first level or include NaN indicator).
 
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+## Modeling approach
+- Target: `P` (Points). This is fixed in the app's modeling workflow.
+- Features: user-selected numeric columns.
+- Train/test split: fixed 50% test set (test_size = 0.5) for consistent evaluation.
+- Models implemented:
+   - Linear Regression
+   - Decision Tree Regressor (for non-linear interactions)
+- Evaluation metrics:
+   - RMSE (root mean squared error)
+   - MAE (mean absolute error)
+   - R2 on test set
+   - Cross-validated R2 on training set (5-fold) as a rough measure of generalization
+
+## Design notes and caveats
+- The app is intentionally lightweight: models are simple baselines to demonstrate the pipeline rather than production-grade performance. For final modeling, consider:
+   - Adding regularization (Ridge, Lasso) and hyperparameter tuning (GridSearchCV).
+   - Expanding to ensemble methods (RandomForest, XGBoost) with careful cross-validation.
+   - Feature selection and careful handling of multicollinearity (drop or combine highly correlated features).
+
+## Contributing & contact
+- Author: Keshavi Dave
+- Course: CMSE 830 (semester-long final project)
