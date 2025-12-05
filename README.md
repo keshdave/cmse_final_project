@@ -1,7 +1,7 @@
 # CMSE 830 Midterm Project
 
-To access the app, [Click Here!](https://blank-app-6ed1ez2skeb.streamlit.app/)
----
+### To access the app, [Click Here!](https://blank-app-6ed1ez2skeb.streamlit.app/)
+
 ## Features
 - Interactive EDA: parallel coordinates and clustered heatmaps for multivariate inspection.
 - Feature engineering: log transforms, z-standardization, ratio and polynomial features, and one-hot encoding for categorical variables (`S/C`, `Div`, `Conf`).
